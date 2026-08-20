@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}{{ business_type }} — EaseBiz AI Analysis{% endblock %}
+{% block content %}
+
+<div class="min-h-screen bg-slate-50 pt-24 pb-20">
+  <div class="max-w-7xl mx-auto px-6">
+    <a href="{{ url_for('index') }}#dashboard" class="flex items-center gap-2 text-slate-500 hover:text-brand-600 mb-8 transition-colors font-medium w-fit">
+      <i data-lucide="arrow-right" class="w-5 h-5 rotate-180"></i> Back to Dashboard
+    </a>
+
+    <div class="bg-white rounded-[32px] shadow-xl border border-slate-200 overflow-hidden">
+      <!-- Header -->
+      <div class="bg-slate-900 p-8 lg:p-12 text-white">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div>
+            <span class="text-brand-400 font-bold text-sm uppercase tracking-widest mb-2 block">Comprehensive AI Analysis</span>
+            <h1 class="text-3xl lg:text-5xl font-display font-bold">{{ business_type }}</h1>
+          </div>
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div class="px-4 py-2 bg-white/10 rounded-full border border-white/20 text-sm">
+              Confidence Score: <span class="text-brand-400 font-bold">96%</span>
+            </div>
+            <a
+              href="{{ url_for('download_pdf', business_type=business_type) }}"
+              class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-5 rounded-full transition-all duration-300 text-sm shadow-lg shadow-emerald-500/20 active:scale-95"
+            >
+              <i data-lucide="file-text" class="w-4 h-4"></i> Download PDF Blueprint
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-slate-100 overflow-x-auto">
+        {% set tabs = [
+          ("market", "trending-up", "Market Analysis"),
+          ("expert", "shield-check", "Expert Advice"),
+          ("licensing", "file-badge", "Licensing Guide"),
+          ("schemes", "indian-rupee", "Government Schemes"),
+          ("competition", "globe", "Competition (Global/India)"),
+        ] %}
+        {% for id, icon, label in tabs %}
+        <button
+          class="tabBtn flex items-center gap-2 px-8 py-6 text-sm font-bold whitespace-nowrap transition-all border-b-2 {{ 'border-brand-600 text-brand-600 bg-brand-50/30' if loop.first else 'border-transparent text-slate-500 hover:text-slate-800' }}"
+          data-tab="{{ id }}"
+        >
+          <i data-lucide="{{ icon }}" class="w-4 h-4"></i> {{ label }}
+        </button>
+        {% endfor %}
+      </div>
+
+      <!-- Content -->
+      <div class="p-8 lg:p-12">
+
+        <div class="tabPanel" data-panel="market">
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100">
+              <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-brand-600"></i> Market Size & Potential</h3>
+              <p class="text-slate-600 leading-relaxed">{{ data.market_size }}</p>
+            </div>
+            <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100">
+              <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i data-lucide="search" class="w-5 h-5 text-brand-600"></i> Consumer Behavior</h3>
+              <p class="text-slate-600 leading-relaxed">{{ data.consumer_behavior }}</p>
+            </div>
+          </div>
+          <div class="mt-8 p-8 rounded-3xl bg-brand-50 border border-brand-100">
+            <h3 class="text-xl font-bold mb-4 text-brand-900">AI Strategic Insight</h3>
+            <p class="text-brand-800 leading-relaxed">{{ data.ai_insight }}</p>
+          </div>
+        </div>
+
+        <div class="tabPanel hidden" data-panel="expert">
+          <div class="flex items-start gap-6 p-8 rounded-3xl bg-slate-900 text-white mb-8">
+            <div class="w-16 h-16 rounded-full bg-brand-500 flex items-center justify-center shrink-0"><i data-lucide="shield-check" class="w-8 h-8"></i></div>
+            <div>
+              <h3 class="text-2xl font-bold mb-2">Expert Level Advice</h3>
+              <p class="text-slate-400 italic">"{{ data.expert_quote }}"</p>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6">
+            <div class="p-6 rounded-2xl border border-slate-200"><h4 class="font-bold text-brand-600 mb-2">Financial</h4><p class="text-sm text-slate-600">{{ data.financial_advice }}</p></div>
+            <div class="p-6 rounded-2xl border border-slate-200"><h4 class="font-bold text-brand-600 mb-2">Operational</h4><p class="text-sm text-slate-600">{{ data.operational_advice }}</p></div>
+            <div class="p-6 rounded-2xl border border-slate-200"><h4 class="font-bold text-brand-600 mb-2">Legal</h4><p class="text-sm text-slate-600">{{ data.legal_advice }}</p></div>
+          </div>
+        </div>
+
+        <div class="tabPanel hidden" data-panel="licensing">
+          <h3 class="text-2xl font-bold mb-6">Detailed Licensing Roadmap</h3>
+          <div class="space-y-4">
+            {% for l in licenses %}
+            <div class="flex flex-col md:flex-row md:items-center justify-between p-6 rounded-2xl border border-slate-100 bg-slate-50 hover:border-brand-300 transition-all">
+              <div>
+                <h4 class="font-bold text-lg">{{ l.name }}</h4>
+                <div class="flex gap-4 mt-1 text-sm text-slate-500">
+                  <span>Timeline: <b>{{ l.time }}</b></span>
+                  <span>Govt Fee: <b>{{ l.cost }}</b></span>
+                </div>
+              </div>
+              <a href="{{ l.link }}" target="_blank" rel="noopener noreferrer" class="mt-4 md:mt-0 px-6 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-brand-600 transition-all text-center">Direct Apply</a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="tabPanel hidden grid md:grid-cols-2 gap-8" data-panel="schemes">
+          {% for s in schemes %}
+          <div class="p-8 rounded-3xl border border-brand-100 bg-gradient-to-br from-white to-brand-50/30">
+            <h4 class="text-xl font-bold mb-2">{{ s.name }}</h4>
+            <p class="text-slate-600 mb-6">{{ s.benefit }}</p>
+            <a href="{{ s.link }}" target="_blank" rel="noopener noreferrer" class="text-brand-600 font-bold flex items-center gap-2 hover:gap-3 transition-all">Apply for Scheme <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="tabPanel hidden" data-panel="competition">
+          <div class="grid md:grid-cols-2 gap-12 mb-10">
+            <div>
+              <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">🇮🇳</div> Indian Landscape
+              </h3>
+              <div class="p-6 rounded-2xl bg-slate-50">
+                <h4 class="font-bold mb-2">Domestic Market Moat</h4>
+                <p class="text-sm text-slate-600">{{ data.local_competitors }}</p>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">🌐</div> Global Landscape
+              </h3>
+              <div class="p-6 rounded-2xl bg-slate-50">
+                <h4 class="font-bold mb-2">Global Benchmarks</h4>
+                <p class="text-sm text-slate-600">{{ data.global_competitors }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-slate-900 rounded-3xl p-10 text-center text-white">
+            <h3 class="text-2xl font-bold mb-4">Want the complete detailed analysis of competition across India and global markets?</h3>
+            <p class="text-slate-400 mb-8 max-w-2xl mx-auto">Unlock our Premium Intelligence Report featuring real-time data, pricing strategies, and deep-dive SWOT analysis.</p>
+            <button class="bg-brand-600 text-white px-10 py-4 rounded-full font-bold hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20">Unlock Premium Report</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %}
