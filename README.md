@@ -78,3 +78,8 @@ gunicorn -w 2 -b 0.0.0.0:8000 app:app
 ```
 
 Set `GROQ_API_KEY` and `FLASK_SECRET_KEY` as real environment variables on your host — don't rely on the `.env` file in production. A `.gitignore` is included so `.venv/` and `.env` never get committed.
+
+## Notes
+
+- `llm_service.py` and `pdf_generator.py` are framework-agnostic (pure Python, no Flask imports), so they can be reused as-is in a FastAPI version — only `app.py` and the templates' `url_for(...)` calls are Flask-specific.
+- Built as part of a 6th-semester minor project (MSME compliance SaaS concept).
